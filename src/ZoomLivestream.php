@@ -4,6 +4,8 @@ namespace anhnguyenbk\PHPLivestream;
 
 use \Firebase\JWT\JWT;
 use GuzzleHttp\Client;
+use anhnguyenbk\PHPLivestream\Model\LiveEvent;
+use Carbon\Carbon;
 
 class ZoomLivestream implements PHPLivestream {
     function __construct($apiKey, $apiSecret) {
@@ -19,7 +21,7 @@ class ZoomLivestream implements PHPLivestream {
         return JWT::encode($payload, $this->apiSecret);    
     }
 
-    function createLivestream ($livestream) {
+    function createLivestream ($userId, $classId, $eventData) {
         $client = new Client([
             // Base URI is used with relative requests
             'base_uri' => 'https://api.zoom.us',
@@ -31,16 +33,33 @@ class ZoomLivestream implements PHPLivestream {
                 "Authorization" => "Bearer " . $this->getZoomAccessToken()
             ],
             'json' => [
-                "topic" => $livestream->topic,
+                "topic" => $eventData->topic,
                 "type" => 2,
-                "start_time" => $livestream->startTime,
-                "duration" => $livestream->duration, // mins
-                "password" => $livestream->password
+                "start_time" => $eventData->startTime,
+                "duration" => $eventData->duration, // mins
+                "password" => $eventData->password
             ],
         ]);
      
         error_log ("Zoom startLivestream response data " . $response->getBody());
-        return json_decode($response->getBody());
+
+        $resBody = json_decode($response->getBody());
+
+        $liveEvent = new LiveEvent;
+        $liveEvent->user_id = $userId;
+        $liveEvent->class_id = $classId;
+        $liveEvent->event_uuid = $resBody->uuid;
+        $liveEvent->event_id = $resBody->id;
+        $liveEvent->topic = $resBody->topic;
+        $liveEvent->status = $resBody->status;
+        $liveEvent->duration = $resBody->duration;
+        $liveEvent->timezone = $resBody->timezone;
+        $liveEvent->start_time = Carbon::now();
+        $liveEvent->start_url = $resBody->start_url;
+        $liveEvent->join_url = $resBody->join_url;
+        $liveEvent->event_response = $response->getBody();
+        $liveEvent->save();
+        return $liveEvent;
     }
 }
 ?> 

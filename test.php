@@ -16,4 +16,4 @@ $livestream->duration = "60";
 $livestream->password = "111111";
 
 $response = $zoomService->createLivestream($livestream);
-print_r ($response);
+print (json_decode ($response));
