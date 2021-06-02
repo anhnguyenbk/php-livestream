@@ -1,0 +1,22 @@
+{
+    "name": "anhnguyenbk/php-livestream",
+    "description": "PHP Livestream",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Anh Nguyen",
+            "email": "nghoanganh994@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "anhnguyenbk\\PHPLivestream\\": "src/"
+        }
+    },
+    "require": {
+        "firebase/php-jwt": "^v5.2.1",
+        "guzzlehttp/guzzle": "^7.1.0"
+    }
+}
