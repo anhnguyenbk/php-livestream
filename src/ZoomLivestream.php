@@ -21,7 +21,7 @@ class ZoomLivestream implements PHPLivestream {
         return JWT::encode($payload, $this->apiSecret);    
     }
 
-    function createLivestream ($userId, $classId, $eventData) {
+    function createLivestream ($eventData) {
         $client = new Client([
             // Base URI is used with relative requests
             'base_uri' => 'https://api.zoom.us',
@@ -42,24 +42,8 @@ class ZoomLivestream implements PHPLivestream {
         ]);
      
         error_log ("Zoom startLivestream response data " . $response->getBody());
-
         $resBody = json_decode($response->getBody());
-
-        $liveEvent = new LiveEvent;
-        $liveEvent->user_id = $userId;
-        $liveEvent->class_id = $classId;
-        $liveEvent->event_uuid = $resBody->uuid;
-        $liveEvent->event_id = $resBody->id;
-        $liveEvent->topic = $resBody->topic;
-        $liveEvent->status = $resBody->status;
-        $liveEvent->duration = $resBody->duration;
-        $liveEvent->timezone = $resBody->timezone;
-        $liveEvent->start_time = Carbon::now();
-        $liveEvent->start_url = $resBody->start_url;
-        $liveEvent->join_url = $resBody->join_url;
-        $liveEvent->event_response = $response->getBody();
-        $liveEvent->save();
-        return $liveEvent;
+        return $resBody;
     }
 }
 ?> 
